@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Material;
+use Illuminate\Http\Request;
 
 class MaterialController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $materials = Material::all();
-        return view('dashboard', compact('materials'));
+        $kategori = $request->input('kategori');
+        $materials = Material::when($kategori, function($query, $kategori) {
+                return $query->where('kategori', $kategori);
+            })
+            ->get();
+        return view('material.index', compact('materials'));
     }
 }
+
