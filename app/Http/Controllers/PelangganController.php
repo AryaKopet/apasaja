@@ -1,51 +1,68 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Models\Material;
-use Illuminate\Http\Request;
 use App\Models\Pelanggan;
+use Illuminate\Http\Request;
 
 class PelangganController extends Controller
-{   
+{
+    // Menampilkan daftar pelanggan di dashboard admin
     public function index()
     {
-        try {
-            $pelanggan = Pelanggan::all();
-            return view('pelanggan.index', compact('pelanggan'));
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
+        $pelanggans = Pelanggan::all();
+        return view('admin.pelanggan.index', compact('pelanggans'));
     }
 
-    public function step1()
+    // Form untuk menambah pelanggan
+    public function create()
     {
-        return view('pelanggan.form-step1');
+        return view('admin.pelanggan.create');
     }
 
-    public function step2(Request $request)
+    // Menyimpan data pelanggan baru
+    public function store(Request $request)
     {
-        // Simpan data sementara di session
-        $request->session()->put('pelanggan', $request->only('nama', 'email', 'no_telepon', 'lokasi'));
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:pelanggan,email',
+            'no_telepon' => 'required|string|max:15',
+            'lokasi' => 'required|in:Jabodetabek,Luar',
+        ]);
 
-        // Ambil data material dan frame berdasarkan kategori
-        $materials = Material::where('kategori', 'material')->get();
-        $frames = Material::where('kategori', 'frame')->get();
+        Pelanggan::create($request->all());
 
-        return view('pelanggan.form-step2', compact('materials', 'frames'));
+        return redirect()->route('dashboard.pelanggan')->with('success', 'Pelanggan berhasil ditambahkan!');
     }
 
-    public function submit(Request $request)
+    // Form untuk mengedit pelanggan
+    public function edit($id)
     {
-        $pelangganData = $request->session()->get('pelanggan');
-        // Simpan data pelanggan dan pilihan material/frame
-        // (Implementasikan penyimpanan sesuai kebutuhan)
-        
-        return redirect()->route('pelanggan.thankyou');
+        $pelanggan = Pelanggan::findOrFail($id);
+        return view('admin.pelanggan.edit', compact('pelanggan'));
     }
 
-    public function thankyou()
+    // Mengupdate data pelanggan
+    public function update(Request $request, $id)
     {
-        return view('pelanggan.thankyou');
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:pelanggan,email,' . $id,
+            'no_telepon' => 'required|string|max:15',
+            'lokasi' => 'required|in:Jabodetabek,Luar',
+        ]);
+
+        $pelanggan = Pelanggan::findOrFail($id);
+        $pelanggan->update($request->all());
+
+        return redirect()->route('dashboard.pelanggan')->with('success', 'Pelanggan berhasil diperbarui!');
+    }
+
+    // Menghapus pelanggan
+    public function destroy($id)
+    {
+        $pelanggan = Pelanggan::findOrFail($id);
+        $pelanggan->delete();
+
+        return redirect()->route('dashboard.pelanggan')->with('success', 'Pelanggan berhasil dihapus!');
     }
 }

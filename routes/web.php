@@ -11,6 +11,14 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard/pelanggan', [PelangganController::class, 'index'])->name('dashboard.pelanggan');
+    Route::get('/dashboard/pelanggan/create', [PelangganController::class, 'create'])->name('dashboard.pelanggan.create');
+    Route::post('/dashboard/pelanggan', [PelangganController::class, 'store'])->name('dashboard.pelanggan.store');
+    Route::get('/dashboard/pelanggan/{id}/edit', [PelangganController::class, 'edit'])->name('dashboard.pelanggan.edit');
+    Route::put('/dashboard/pelanggan/{id}', [PelangganController::class, 'update'])->name('dashboard.pelanggan.update');
+    Route::delete('/dashboard/pelanggan/{id}', [PelangganController::class, 'destroy'])->name('dashboard.pelanggan.destroy');
+});
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
@@ -22,4 +30,4 @@ Route::post('/pelanggan/step2', [PelangganController::class, 'step2'])->name('pe
 Route::post('/pelanggan/submit', [PelangganController::class, 'submit'])->name('pelanggan.submit');
 Route::get('/pelanggan/thankyou', [PelangganController::class, 'thankyou'])->name('pelanggan.thankyou');
 Route::post('/pelanggan/thankyou', [PelangganController::class, 'thankyou'])->name('pelanggan.thankyou');
-Route::get('/pelanggan', [PelangganController::class, 'index'])->name('pelanggan.index');
+

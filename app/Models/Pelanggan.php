@@ -1,4 +1,5 @@
-<?
+<?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,13 +9,10 @@ class Pelanggan extends Model
 {
     use HasFactory;
 
-    // Pastikan nama tabel sesuai dengan database
+    // Nama tabel di database
     protected $table = 'pelanggan';
 
-    // Jika menggunakan timestamps
-    public $timestamps = true;
-
-    // Kolom yang boleh diisi
+    // Kolom yang dapat diisi
     protected $fillable = [
         'nama',
         'email',
